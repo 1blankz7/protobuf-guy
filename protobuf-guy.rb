@@ -1,21 +1,21 @@
 #!/usr/bin/env ruby 
 
 # == Synopsis 
-#   This is a sample description of the application.
-#   Blah blah blah.
+#   Simple command line tool to translate protobuf messages into code.
+#   The tool should work platform independed.
 #
 # == Examples
 #   This command does blah blah blah.
-#     ruby_cl_skeleton foo.txt
+#     protobuf-guy foo.txt
 #
 #   Other examples:
-#     ruby_cl_skeleton -q bar.doc
-#     ruby_cl_skeleton --verbose foo.html
+#     protobuf-guy -q bar.doc
+#     protobuf-guy --verbose foo.html
 #
 # == Usage 
-#   ruby_cl_skeleton [options] source_file
+#   protobuf-guy [options] source_file
 #
-#   For help use: ruby_cl_skeleton -h
+#   For help use: protobuf-guy -h
 #
 # == Options
 #   -h, --help          Displays help message
@@ -26,17 +26,15 @@
 #
 # == Author
 #   Christian Blank <christian.blank@haw-hamburg.de>
-# TO DO - replace all ruby_cl_skeleton with your app name
-# TO DO - replace all YourName with your actual name
-# TO DO - update Synopsis, Examples, etc
-# TO DO - change license if necessary
 
 
 
 require 'optparse' 
 require 'ostruct'
 require 'date'
-
+require 'rbconfig'
+require 'pathname'
+require 'csv'
 
 class App
   VERSION = '0.0.1'
@@ -51,6 +49,9 @@ class App
     @options = OpenStruct.new
     @options.verbose = false
     @options.quiet = false
+    @options.input = '.'
+    @options.output = '.'
+    @options.map_name = 'MessageTypes'
     @opts
   end
 
@@ -65,7 +66,8 @@ class App
       
       output_options if @options.verbose # [Optional]
             
-      process_arguments            
+      process_arguments   
+      os         
       process_command
       
       puts "\
@@ -87,6 +89,15 @@ Finished at #{DateTime.now}" if @options.verbose
       @opts.on('-h', '--help')       { output_help }
       @opts.on('-V', '--verbose')    { @options.verbose = true }  
       @opts.on('-q', '--quiet')      { @options.quiet = true }
+      @opts.on('-i', '--input INPUT', "Require the input folder") do |input| 
+        @options.input = input
+      end
+      @opts.on('-o', '--output PUTPUT', "Require the output folder") do |output| 
+        @options.output = output
+      end
+      @opts.on('-m', '--map NAME') do |map_name| 
+        @options.map_name = map_name
+      end
       # TO DO - add additional options
             
       @opts.parse!(@arguments) rescue return false
@@ -111,13 +122,12 @@ Finished at #{DateTime.now}" if @options.verbose
 
     # True if required arguments were provided
     def arguments_valid?
-      # TO DO - implement your real logic here
-      true if @arguments.length == 1 
+      true
     end
     
     # Setup the arguments
     def process_arguments
-      # TO DO - place in local vars, etc
+      
     end
     
     def output_help
@@ -131,27 +141,49 @@ Finished at #{DateTime.now}" if @options.verbose
     def output_version
       puts "#{File.basename(__FILE__)} version #{VERSION}"
     end
+
+
+    # check current os
+    def os
+      @os ||= (
+        host_os = RbConfig::CONFIG['host_os']
+        case host_os
+        when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+          :windows
+        when /darwin|mac os/
+          :macosx
+        when /linux/
+          :linux
+        else
+          raise Error::WebDriverError, "unknown os: #{host_os.inspect}"
+        end
+      )
+    end
+
+    def recursive_search(folder)
+      Dir.glob("#{folder}/**/*.proto")
+    end
+
+    def save_map(files, folder, map_name)
+      File.open("#{folder}/#{map_name}", 'w') do |map|
+        files.each_with_index do |file, index|
+          map.write("#{index},#{file}")
+          if index < files.size - 1
+            map.write("\n")
+          end
+        end
+      end
+    end
     
     def process_command
-      # TO DO - do whatever this app does
-      
-      #process_standard_input # [Optional]
-    end
-
-    def process_standard_input
-      input = @stdin.read      
-      # TO DO - process input
-      
-      # [Optional]
-      # @stdin.each do |line| 
-      #  # TO DO - process each line
-      #end
+      # search input folder recursive
+      files = recursive_search(@options.input)
+      # save map of files
+      save_map(files, @options.output, @options.map_name)
+      # check language
+      # build classes
     end
 end
-
-
-# TO DO - Add your Modules, Classes, etc
-
 
 # Create and run the application
 app = App.new(ARGV, STDIN)
