@@ -127,7 +127,7 @@ Finished at #{DateTime.now}" if @options.verbose
     
     # Setup the arguments
     def process_arguments
-      
+
     end
     
     def output_help
@@ -167,7 +167,7 @@ Finished at #{DateTime.now}" if @options.verbose
     def save_map(files, folder, map_name)
       File.open("#{folder}/#{map_name}", 'w') do |map|
         files.each_with_index do |file, index|
-          map.write("#{index},#{file}")
+          map.write("#{index},#{File.basename(file, '.*')}")
           if index < files.size - 1
             map.write("\n")
           end
