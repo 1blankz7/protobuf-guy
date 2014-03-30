@@ -32,7 +32,7 @@ require 'csv'
 require 'fileutils'
 
 class App
-  VERSION = '0.0.1'
+  VERSION = '0.1'
   
   attr_reader :options
 
