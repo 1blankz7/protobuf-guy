@@ -6,23 +6,17 @@
 #
 # == Examples
 #   This command does blah blah blah.
-#     protobuf-guy foo.txt
-#
-#   Other examples:
-#     protobuf-guy -q bar.doc
-#     protobuf-guy --verbose foo.html
+#     protobuf-guy -i tests -o tests
 #
 # == Usage 
-#   protobuf-guy [options] source_file
+#   protobuf-guy [options]
 #
 #   For help use: protobuf-guy -h
 #
 # == Options
 #   -h, --help          Displays help message
 #   -v, --version       Display the version, then exit
-#   -q, --quiet         Output as little as possible, overrides verbose
-#   -V, --verbose       Verbose output
-#   TO DO - add additional options
+#   -V, --verbose       Output as much as possible
 #
 # == Author
 #   Christian Blank <christian.blank@haw-hamburg.de>
@@ -35,6 +29,7 @@ require 'date'
 require 'rbconfig'
 require 'pathname'
 require 'csv'
+require 'fileutils'
 
 class App
   VERSION = '0.0.1'
@@ -48,7 +43,6 @@ class App
     # Set defaults
     @options = OpenStruct.new
     @options.verbose = false
-    @options.quiet = false
     @options.input = '.'
     @options.output = '.'
     @options.map_name = 'MessageTypes'
@@ -86,9 +80,8 @@ Finished at #{DateTime.now}" if @options.verbose
       # Specify options
       @opts = OptionParser.new 
       @opts.on('-v', '--version')    { output_version ; exit 0 }
-      @opts.on('-h', '--help')       { output_help }
+      @opts.on('-h', '--help')       { output_help ; exit 0}
       @opts.on('-V', '--verbose')    { @options.verbose = true }  
-      @opts.on('-q', '--quiet')      { @options.quiet = true }
       @opts.on('-i', '--input INPUT', "Require the input folder") do |input| 
         @options.input = input
       end
@@ -108,7 +101,7 @@ Finished at #{DateTime.now}" if @options.verbose
 
     # Performs post-parse processing on options
     def process_options
-      @options.verbose = false if @options.quiet
+      
     end
     
     def output_options
@@ -132,6 +125,7 @@ Finished at #{DateTime.now}" if @options.verbose
     
     def output_help
       output_version
+      output_usage
     end
     
     def output_usage
@@ -174,14 +168,35 @@ Finished at #{DateTime.now}" if @options.verbose
         end
       end
     end
+
+    def build_classes(files, folder)
+
+      files.each do |file|
+        if @os == :linux || @os == :macosx
+          system("protoc --python_out=#{folder}python #{file}")
+          system("protoc --java_out=#{folder}java #{file}")
+          system("protoc --cpp_out=#{folder}cpp #{file}")
+        end
+      end
+    end
     
     def process_command
       # search input folder recursive
       files = recursive_search(@options.input)
       # save map of files
       save_map(files, @options.output, @options.map_name)
-      # check language
+      # clear output dir
+      FileUtils.rm_rf("#{@options.output}python")
+      FileUtils.rm_rf("#{@options.output}java")
+      FileUtils.rm_rf("#{@options.output}cpp")
+      FileUtils.rm_rf("#{@options.output}csharp")
+      # create folders
+      FileUtils::mkdir_p "#{@options.output}python"
+      FileUtils::mkdir_p "#{@options.output}java"
+      FileUtils::mkdir_p "#{@options.output}cpp"
+      FileUtils::mkdir_p "#{@options.output}csharp"
       # build classes
+      build_classes(files, @options.output)
     end
 end
 
