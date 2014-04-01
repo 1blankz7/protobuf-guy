@@ -34,3 +34,11 @@ The script creates four subdirectories in the `tests` directory and the translat
 The script was currently tested with following configurations:
 
  * Ubuntu 13.10: C++, Java, Python
+
+## TODO
+
+ * Nested Messages unterstützen
+ * Namen in MessageTypes orientieren sich an Message-Namen
+ * Nested Messages haben den Namen MessageName.NestedMessageName
+ * alle Klassen werden in einen Ordner gelegt, wenn möglich sogar in eine Datei
+ * Unterstüzung für Windows und C#

@@ -45,7 +45,7 @@ class App
     @options.verbose = false
     @options.input = '.'
     @options.output = '.'
-    @options.map_name = 'MessageTypes'
+    @options.map_name = 'MessageTypes.txt'
     @opts
   end
 
