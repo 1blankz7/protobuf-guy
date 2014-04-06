@@ -180,7 +180,10 @@ Finished at #{DateTime.now}" if @options.verbose
           system("protoc --java_out=#{folder}java #{file}")
           system("protoc --cpp_out=#{folder}cpp #{file}")
         elsif @os == :windows
-          
+          system("protoc --python_out=#{folder}python #{file}")
+          system("protoc --java_out=#{folder}java #{file}")
+          system("protoc --cpp_out=#{folder}cpp #{file}")
+          system("ProtoGen --proto_path=#{folder} -output_directory=#{folder}csharp #{file}")
         end
       end
     end
