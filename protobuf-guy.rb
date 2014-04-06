@@ -179,6 +179,8 @@ Finished at #{DateTime.now}" if @options.verbose
           system("protoc --python_out=#{folder}python #{file}")
           system("protoc --java_out=#{folder}java #{file}")
           system("protoc --cpp_out=#{folder}cpp #{file}")
+        elsif @os == :windows
+          
         end
       end
     end
@@ -208,8 +210,6 @@ class Parser
   def initialize(filename)
     @filename = filename
   end
-
-  
 
   def parse
     array = Array.new
