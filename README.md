@@ -37,8 +37,7 @@ The script was currently tested with following configurations:
 
 ## TODO
 
- * Nested Messages unterstützen
- * Namen in MessageTypes orientieren sich an Message-Namen
- * Nested Messages haben den Namen MessageName.NestedMessageName
- * alle Klassen werden in einen Ordner gelegt, wenn möglich sogar in eine Datei
- * Unterstüzung für Windows und C#
+ * improve documentation
+ * refactor some methods and use classes
+ * all classes should be in one folder, if possible in one file
+ * support Windows and C#
