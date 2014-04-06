@@ -173,18 +173,16 @@ Finished at #{DateTime.now}" if @options.verbose
     end
 
     def build_classes(files, folder)
-
-      files.each do |file|
-        if @os == :linux || @os == :macosx
-          system("protoc --python_out=#{folder}python #{file}")
-          system("protoc --java_out=#{folder}java #{file}")
-          system("protoc --cpp_out=#{folder}cpp #{file}")
+      filelist = files.join(" ")
+      if @os == :linux || @os == :macosx
+          system("protoc --python_out=#{folder}python #{filelist}")
+          system("protoc --java_out=#{folder}java #{filelist}")
+          system("protoc --cpp_out=#{folder}cpp #{filelist}")
         elsif @os == :windows
-          system("protoc --python_out=#{folder}python #{file}")
-          system("protoc --java_out=#{folder}java #{file}")
-          system("protoc --cpp_out=#{folder}cpp #{file}")
-          system("ProtoGen --proto_path=#{folder} -output_directory=#{folder}csharp #{file}")
-        end
+          system("protoc --python_out=#{folder}python #{filelist}")
+          system("protoc --java_out=#{folder}java #{filelist}")
+          system("protoc --cpp_out=#{folder}cpp #{filelist}")
+          system("ProtoGen --proto_path=#{folder} -output_directory=#{folder}csharp #{filelist}")
       end
     end
     
