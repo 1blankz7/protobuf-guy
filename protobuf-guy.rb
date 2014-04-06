@@ -160,10 +160,13 @@ Finished at #{DateTime.now}" if @options.verbose
 
     def save_map(files, folder, map_name)
       File.open("#{folder}/#{map_name}", 'w') do |map|
-        files.each_with_index do |file, index|
-          map.write("#{index},#{File.basename(file, '.*')}")
-          if index < files.size - 1
-            map.write("\n")
+        index = 0
+        files.each do |file|
+          parser = Parser.new(file)
+          messages = parser.parse
+          messages.each do |message|
+            map.write("#{index},#{message}\n")
+            index += 1
           end
         end
       end
@@ -198,6 +201,39 @@ Finished at #{DateTime.now}" if @options.verbose
       # build classes
       build_classes(files, @options.output)
     end
+end
+
+class Parser 
+
+  def initialize(filename)
+    @filename = filename
+  end
+
+  
+
+  def parse
+    array = Array.new
+    File.open(@filename, "r") do |infile|
+      while (line = infile.gets)
+        pos = line =~ /message \w+ *\{/
+        if pos
+          level = (pos / 2).floor
+          if array.length <= level
+            array << Array.new
+          end
+          name = ""
+          if level > 0
+            name = "#{array[level-1][-1]}."
+          end
+
+          name = "#{name}#{line[pos + 8 .. (line.index(/ *\{/) - 1)]}"
+          array[level] << name
+        end
+      end
+    end
+
+    return array.flatten
+  end
 end
 
 # Create and run the application
