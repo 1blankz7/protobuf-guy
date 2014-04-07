@@ -39,6 +39,7 @@ The script was currently tested with following configurations:
 
  * Ubuntu 13.10: C++, Java, Python
  * Windows 8: C++, Java, Python, C#
+ * Windows 7: C++, Java, Python, C# (using ruby-1.9.3-p545)
 
 ## TODO
 
