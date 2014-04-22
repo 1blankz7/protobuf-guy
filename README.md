@@ -7,11 +7,11 @@ The script is written in Ruby with some requirements.
 
 ## Requirements
 
-
+The tool is only tested with Ruby 1.9 on Windows 8 and Ubuntu 13.10. More environments will be tested in the future and reported in the tested secion below.
  
 ## Installation
 
-To install protobuf please refer the install guide in the protobuf directory.
+To install protobuf please refer the install guide in the protobuf directory. Usually you only need to add `protoc` to your path.
 
 ## Usage
 
@@ -33,12 +33,14 @@ The script creates four subdirectories in the `tests` directory and the translat
 3,Test.InnerTest.InnerInnerTest
 ```
 
+To create nested messages in the MessagesTypes list, you must use the convention of `two spaces` as indentation for every nesting level.
+
 ## Tested
 
 The script was currently tested with following configurations:
 
- * Ubuntu 13.10: C++, Java, Python
- * Windows 8: C++, Java, Python, C#
+ * Ubuntu 13.10, Ruby 1.9: C++, Java, Python
+ * Windows 8, Ruby 1.9: C++, Java, Python, C#
 
 ## TODO
 
