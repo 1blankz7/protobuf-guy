@@ -187,8 +187,16 @@ Finished at #{DateTime.now}" if @options.verbose
     end
     
     def process_command
+      if @options.verbose
+        puts "Recursive search in: #{@options.input}"
+      end
       # search input folder recursive
       files = recursive_search(@options.input)
+
+      if @options.verbose
+        puts "Found #{files.count} proto file(s)"
+      end
+
       # save map of files
       save_map(files, @options.output, @options.map_name)
       # clear output dir
