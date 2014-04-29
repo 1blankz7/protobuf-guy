@@ -82,11 +82,11 @@ Finished at #{DateTime.now}" if @options.verbose
       @opts.on('-v', '--version')    { output_version ; exit 0 }
       @opts.on('-h', '--help')       { output_help ; exit 0}
       @opts.on('-V', '--verbose')    { @options.verbose = true }  
-      @opts.on('-i', '--input INPUT', "Require the input folder") do |input| 
-        @options.input = input
+      @opts.on('-i', '--input INPUT', "Require the input folder") do |input|
+        @options.input = input.gsub(/[#{File::SEPARATOR}]+$/, '')
       end
-      @opts.on('-o', '--output PUTPUT', "Require the output folder") do |output| 
-        @options.output = output
+      @opts.on('-o', '--output PUTPUT', "Require the output folder") do |output|
+        @options.output = output.gsub(/[#{File::SEPARATOR}]+$/, '')
       end
       @opts.on('-m', '--map NAME') do |map_name| 
         @options.map_name = map_name
@@ -159,7 +159,7 @@ Finished at #{DateTime.now}" if @options.verbose
     end
 
     def save_map(files, folder, map_name)
-      File.open("#{folder}/#{map_name}", 'w') do |map|
+      File.open("#{folder}#{File::SEPARATOR}#{map_name}", 'w') do |map|
         index = 0
         files.each do |file|
           parser = Parser.new(file)
@@ -174,15 +174,16 @@ Finished at #{DateTime.now}" if @options.verbose
 
     def build_classes(files, folder)
       filelist = files.join(" ")
+
       if @os == :linux || @os == :macosx
-          system("protoc --python_out=#{folder}python #{filelist}")
-          system("protoc --java_out=#{folder}java #{filelist}")
-          system("protoc --cpp_out=#{folder}cpp #{filelist}")
+          system("protoc --python_out=#{folder}#{File::SEPARATOR}python #{filelist}")
+          system("protoc --java_out=#{folder}#{File::SEPARATOR}java #{filelist}")
+          system("protoc --cpp_out=#{folder}#{File::SEPARATOR}cpp #{filelist}")
         elsif @os == :windows
-          system("protoc --python_out=#{folder}python #{filelist}")
-          system("protoc --java_out=#{folder}java #{filelist}")
-          system("protoc --cpp_out=#{folder}cpp #{filelist}")
-          system("ProtoGen --proto_path=#{folder} -output_directory=#{folder}csharp #{filelist}")
+          system("protoc --python_out=#{folder}#{File::SEPARATOR}python #{filelist}")
+          system("protoc --java_out=#{folder}#{File::SEPARATOR}java #{filelist}")
+          system("protoc --cpp_out=#{folder}#{File::SEPARATOR}cpp #{filelist}")
+          system("ProtoGen --proto_path=#{folder} -output_directory=#{folder}#{File::SEPARATOR}csharp #{filelist}")
       end
     end
     
@@ -190,25 +191,63 @@ Finished at #{DateTime.now}" if @options.verbose
       if @options.verbose
         puts "Recursive search in: #{@options.input}"
       end
+
+      if @options.verbose
+        puts "Search binary: protoc"
+      end
+
+      # try to find protoc
+      protoc = which('protoc')
+      # terminate if not found
+      unless protoc
+        puts "Can't find 'protoc' in PATH"
+        return
+      end
+
+      if @options.verbose
+        puts "Found 'protoc' in #{protoc}" 
+        puts "Search binary: ProtoGen"
+      end
+
+
+      if @os == :windows
+        # if on windows try to find ProtoGen
+        # terminate if not found
+        protogen = which('ProtoGen')
+        unless protogen
+          puts "Can't find 'ProtoGen' in PATH"
+          return
+        end
+
+        if @options.verbose        
+          puts "Found 'ProtoGen' in #{protogen}" 
+        end
+      end    
+
+      if @options.verbose
+        puts "Recursive search in: #{@options.input}"
+      end
+
       # search input folder recursive
       files = recursive_search(@options.input)
 
       if @options.verbose
         puts "Found #{files.count} proto file(s)"
       end
-
-      # save map of files
+          
+      FileUtils::mkdir_p "#{@options.output}"
+      # save map of files  
       save_map(files, @options.output, @options.map_name)
       # clear output dir
-      FileUtils.rm_rf("#{@options.output}python")
-      FileUtils.rm_rf("#{@options.output}java")
-      FileUtils.rm_rf("#{@options.output}cpp")
-      FileUtils.rm_rf("#{@options.output}csharp")
+      FileUtils.rm_rf("#{@options.output}#{File::SEPARATOR}python")
+      FileUtils.rm_rf("#{@options.output}#{File::SEPARATOR}java")
+      FileUtils.rm_rf("#{@options.output}#{File::SEPARATOR}cpp")
+      FileUtils.rm_rf("#{@options.output}#{File::SEPARATOR}csharp")
       # create folders
-      FileUtils::mkdir_p "#{@options.output}python"
-      FileUtils::mkdir_p "#{@options.output}java"
-      FileUtils::mkdir_p "#{@options.output}cpp"
-      FileUtils::mkdir_p "#{@options.output}csharp"
+      FileUtils::mkdir_p "#{@options.output}#{File::SEPARATOR}python"
+      FileUtils::mkdir_p "#{@options.output}#{File::SEPARATOR}java"
+      FileUtils::mkdir_p "#{@options.output}#{File::SEPARATOR}cpp"
+      FileUtils::mkdir_p "#{@options.output}#{File::SEPARATOR}csharp"
       # build classes
       build_classes(files, @options.output)
     end
@@ -243,6 +282,22 @@ class Parser
 
     return array.flatten
   end
+end
+
+
+
+# Cross-platform way of finding an executable in the $PATH.
+#
+#   which('ruby') #=> /usr/bin/ruby
+def which(cmd)
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    exts.each { |ext|
+      exe = File.join(path, "#{cmd}#{ext}")
+      return exe if File.executable? exe
+    }
+  end
+  return nil
 end
 
 # Create and run the application
