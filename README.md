@@ -42,9 +42,15 @@ The script was currently tested with following configurations:
  * Ubuntu 13.10, Ruby 1.9: C++, Java, Python
  * Windows 8, Ruby 1.9: C++, Java, Python, C#
 
+## Changelog
+
+ * 29.04.2014
+ 	* Search for binaries, terminate if not found
+ 	* more verbose output
+ 	* use native directory separators
+ 	* create output directory if not it not exist
+
 ## TODO
 
  * improve documentation
  * refactor some methods and use classes
- * all classes should be in one folder, if possible in one file
- * check input and output paths before (trailing slashes)
