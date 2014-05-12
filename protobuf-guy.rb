@@ -174,16 +174,27 @@ Finished at #{DateTime.now}" if @options.verbose
 
     def build_classes(files, folder)
       filelist = files.join(" ")
+      proto_options = ""
+      import_path = "--proto_path=#{@options.input}"
+      output_paths = "--java_out=#{folder}#{File::SEPARATOR}java --cpp_out=#{folder}#{File::SEPARATOR}cpp --python_out=#{folder}#{File::SEPARATOR}python"
 
-      if @os == :linux || @os == :macosx
-          system("protoc --python_out=#{folder}#{File::SEPARATOR}python #{filelist}")
-          system("protoc --java_out=#{folder}#{File::SEPARATOR}java #{filelist}")
-          system("protoc --cpp_out=#{folder}#{File::SEPARATOR}cpp #{filelist}")
-        elsif @os == :windows
-          system("protoc --python_out=#{folder}#{File::SEPARATOR}python #{filelist}")
-          system("protoc --java_out=#{folder}#{File::SEPARATOR}java #{filelist}")
-          system("protoc --cpp_out=#{folder}#{File::SEPARATOR}cpp #{filelist}")
-          system("ProtoGen --proto_path=#{folder} -output_directory=#{folder}#{File::SEPARATOR}csharp #{filelist}")
+      system_call = "protoc #{import_path} #{output_paths}  #{filelist}"
+      
+      if @options.verbose        
+        puts "Call: #{system_call}" 
+      end
+
+      system(system_call)
+
+      if @os == :windows        
+
+        system_call = "ProtoGen --proto_path=#{@options.input} -output_directory=#{folder}#{File::SEPARATOR}csharp #{filelist}"
+
+        if @options.verbose        
+          puts "Call: #{system_call}" 
+        end
+        system(system_call)
+
       end
     end
     
