@@ -44,11 +44,15 @@ The script was currently tested with following configurations:
 
 ## Changelog
 
+ * 12.05.2014
+ 	* more verbose output
+ 	* only one call for java, c++ and python files
+ 	* use protoc option for import path
  * 29.04.2014
  	* Search for binaries, terminate if not found
  	* more verbose output
  	* use native directory separators
- 	* create output directory if not it not exist
+ 	* create output directory if not exist
 
 ## TODO
 
