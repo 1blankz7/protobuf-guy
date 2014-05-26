@@ -41,7 +41,7 @@ The script was currently tested with following configurations:
 
  * Ubuntu 13.10, Ruby 1.9: C++, Java, Python
  * Windows 8, Ruby 1.9: C++, Java, Python, C#
-
+ * Windows 7: C++, Java, Python, C# (using ruby-1.9.3-p545)
 ## Changelog
 
  * 12.05.2014
