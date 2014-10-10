@@ -21,8 +21,6 @@
 # == Author
 #   Christian Blank <christian.blank@haw-hamburg.de>
 
-
-
 require 'optparse' 
 require 'ostruct'
 require 'date'
