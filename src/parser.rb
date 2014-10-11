@@ -1,4 +1,13 @@
 class Parser
+  @@debug = false
+
+  class LineCounter
+    attr_accessor :currentLine
+
+    def initialize
+      @currentLine = 0
+    end
+  end
 
   def initialize(filename)
     @filename = filename
@@ -9,65 +18,95 @@ class Parser
     return $1
   end
 
-  def searchForBraceInLine(line)
-    return line =~ /\w* *\{/
+  def searchForOpeningBraceInLine(line)
+    return line =~ /{/
+  end
+
+  def searchForClosingBraceInLine(line)
+    return line =~ /}/
+  end
+
+  # Parses a file and returns all its contained messages.
+  # Each new nested message is identified by the "message [messageName] {" pattern.
+  def getMessages(lineIterator)
+    getMessagesRecursion("", lineIterator, LineCounter.new())
+  end
+
+  def getMessagesRecursion(enclosingMessageName, lineIterator, lineCounter)
+    foundMessages = Array.new
+
+    if (@@debug)
+      puts "We are currently in message " + enclosingMessageName + " at line " + lineCounter.currentLine.to_s
+    end
+
+    nestedBraceLevel = 0
+
+    while (line = lineIterator.gets)
+      lineCounter.currentLine += 1
+
+      # Check if there is a nested message in this line.
+      nestedMessageName = searchForMessageInLine(line)
+
+      if (nestedMessageName)
+        # We found a nested message in this line.
+        # Add a prefix to the message name.
+        nestedMessageName = enclosingMessageName + nestedMessageName
+
+        foundMessages << nestedMessageName
+
+        # Fast forward until we have found the opening brace of this nested message
+        lookForOpeningBraceInNextLineForNestedMessage = !searchForOpeningBraceInLine(line)
+        if (lookForOpeningBraceInNextLineForNestedMessage)
+          while (line = lineIterator.gets)
+            lineCounter.currentLine += 1
+            if (searchForOpeningBraceInLine(line))
+              break
+            end
+          end
+        end
+
+        # Start a recursion to get the nested messages of the nested message.
+        foundMessages.concat(getMessagesRecursion(nestedMessageName + ".", lineIterator, lineCounter))
+        next
+      end
+
+      if (searchForOpeningBraceInLine(line))
+        nestedBraceLevel += 1
+        if (@@debug)
+          puts nestedBraceLevel.to_s + " in line " + lineCounter.currentLine.to_s
+        end
+      end
+
+      # Look for the end of the message
+      if (searchForClosingBraceInLine(line))
+        if (nestedBraceLevel < 1)
+          if (@@debug)
+            puts "FOUND closing brace for message: " + enclosingMessageName + " in line " + lineCounter.currentLine.to_s
+          end
+          break
+        end
+        nestedBraceLevel -= 1
+
+        if (@@debug)
+          puts nestedBraceLevel.to_s + " in line " + lineCounter.currentLine.to_s
+        end
+      end
+    end
+
+    return foundMessages
   end
 
   def parse
     foundMessages = Array.new
-    File.open(@filename, "r") do |infile|
-      # Remember the nesting class depth we are currently at. Currently this isn't used anywhere, but may become handy in the future.
-      level = 0
 
-      # Remember the name of the last message we found.
-      currentMessageName = ""
+    File.open(@filename, "r") do |lineIterator|
 
-      # Each new nested message is identified by the "message [messageName] {" pattern. But the brace can be located in a following line.
-      # Since we are reading the file line by line, we need to remember, if we are looking for a brace. This is essentially a very simple parser.
-      lookingForBraceInNextLine = false
+      foundMessages = getMessages(lineIterator)
 
-      while (line = infile.gets)
-        if (!lookingForBraceInNextLine)
-          # We are currently looking for a new message.
-          tmpMessageName = searchForMessageInLine(line)
-
-          if (!tmpMessageName)
-            # If there is no message in this line, there is nothing of interest here.
-            next
-          else
-            # Otherwise we found a new message in this line.
-            currentMessageName = tmpMessageName
-          end
-
-          # Lets see if there is a brace in this line.
-          if (!searchForBraceInLine(line))
-            # If there is no brace in this line, we need to continue looking in the next lines.
-            lookingForBraceInNextLine = true
-            next
-          else
-            # We found a brace in this line.
-            lookingForBraceInNextLine = false
-            foundMessages << currentMessageName
-            level += 1
-            next
-          end
-        else
-          if (!searchForBraceInLine(line))
-            # If there is no brace in this line, we need to continue looking in the next lines.
-            lookingForBraceInNextLine = true
-            next
-          else
-            # We found a brace in this line.
-            lookingForBraceInNextLine = false
-            foundMessages << currentMessageName
-            level += 1
-            next
-          end
-        end
+      if (@@debug)
+        puts "These are the messages I found:"
+        puts foundMessages
       end
-
-      puts "These are the messages I found:"
-      puts foundMessages
 
       return foundMessages
     end
