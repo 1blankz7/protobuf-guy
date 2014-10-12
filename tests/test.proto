@@ -20,7 +20,8 @@ message Test {
     LITE_RUNTIME = 3; // Generate code using MessageLite and the lite runtime.
   }
 
-  message InnerTest {
+  message InnerTest
+  {
     // only for testing inner messages
     optional bool cc_generic_services = 16 [default=false];
     optional bool java_generic_services = 17 [default=false];
