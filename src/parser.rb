@@ -1,4 +1,5 @@
-class Parser 
+class Parser
+  # TODO: Accept "message <MessageName> <nl>{" as valid
 
   def initialize(filename)
     @filename = filename

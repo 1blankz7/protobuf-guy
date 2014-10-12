@@ -42,8 +42,13 @@ The script was currently tested with following configurations:
  * Ubuntu 13.10, Ruby 1.9: C++, Java, Python
  * Windows 8, Ruby 1.9: C++, Java, Python, C#
  * Windows 7: C++, Java, Python, C# (using ruby-1.9.3-p545)
-## Changelog
+ * OSX 10.9.5, ruby-2.0.0: C++, Java, Python
 
+## Changelog
+ 
+ * 12.10.2014
+    * Refactoring source code
+    * update parser
  * 12.05.2014
  	* more verbose output
  	* only one call for java, c++ and python files
@@ -53,8 +58,3 @@ The script was currently tested with following configurations:
  	* more verbose output
  	* use native directory separators
  	* create output directory if not exist
-
-## TODO
-
- * improve documentation
- * refactor some methods and use classes

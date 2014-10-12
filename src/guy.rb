@@ -3,7 +3,7 @@ require_relative 'parser'
 
 
 class Guy
-
+  # TODO: add option for different protobuf csharp versions
   def initialize(args={})
     options = {
       :verbose => false,
@@ -13,15 +13,15 @@ class Guy
     }.merge(args)
 
     @verbose = options[:verbose]
-    @input = options[:input]
-    @output = options[:output]
+    @input_folder = options[:input]
+    @output_folder = options[:output]
     @map_name = options[:map_name]
     @os = Helper.os
   end
 
   def work
     if @verbose
-      puts "Recursive search in: #{@input}"
+      puts "Recursive search in: #{@input_folder}"
     end
 
     if @verbose
@@ -41,7 +41,6 @@ class Guy
       puts "Search binary: ProtoGen"
     end
 
-
     if @os == :windows
       # if on windows try to find ProtoGen
       # terminate if not found
@@ -57,31 +56,21 @@ class Guy
     end    
 
     if @verbose
-      puts "Recursive search in: #{@input}"
+      puts "Recursive search in: #{@input_folder}"
     end
 
     # search input folder recursive
-    files = Helper.recursive_proto_search(@input)
+    files = Helper.recursive_proto_search(@input_folder)
 
     if @verbose
       puts "Found #{files.count} proto file(s)"
     end
-        
-    FileUtils::mkdir_p "#{@output}"
+
+    reset_output_folder
     # save map of files  
-    save_map(files, @output, @map_name)
-    # clear output dir
-    FileUtils.rm_rf("#{@output}#{File::SEPARATOR}python")
-    FileUtils.rm_rf("#{@output}#{File::SEPARATOR}java")
-    FileUtils.rm_rf("#{@output}#{File::SEPARATOR}cpp")
-    FileUtils.rm_rf("#{@output}#{File::SEPARATOR}csharp")
-    # create folders
-    FileUtils::mkdir_p "#{@output}#{File::SEPARATOR}python"
-    FileUtils::mkdir_p "#{@output}#{File::SEPARATOR}java"
-    FileUtils::mkdir_p "#{@output}#{File::SEPARATOR}cpp"
-    FileUtils::mkdir_p "#{@output}#{File::SEPARATOR}csharp"
+    save_map(files, @output_folder, @map_name)
     # build classes
-    build_classes(files, @output)
+    build_classes(files, @output_folder)
   end
 
   def save_map(files, folder, map_name)
@@ -98,10 +87,25 @@ class Guy
     end
   end
 
+  def reset_output_folder
+    FileUtils::mkdir_p "#{@output_folder}"
+    # clear output dir
+    FileUtils.rm_rf("#{@output_folder}#{File::SEPARATOR}python")
+    FileUtils.rm_rf("#{@output_folder}#{File::SEPARATOR}java")
+    FileUtils.rm_rf("#{@output_folder}#{File::SEPARATOR}cpp")
+    FileUtils.rm_rf("#{@output_folder}#{File::SEPARATOR}csharp")
+    # create folders
+    FileUtils::mkdir_p "#{@output_folder}#{File::SEPARATOR}python"
+    FileUtils::mkdir_p "#{@output_folder}#{File::SEPARATOR}java"
+    FileUtils::mkdir_p "#{@output_folder}#{File::SEPARATOR}cpp"
+    FileUtils::mkdir_p "#{@output_folder}#{File::SEPARATOR}csharp"
+  end
+
   def build_classes(files, folder)
     filelist = files.join(" ")
     proto_options = ""
-    import_path = "--proto_path=#{@input}"
+    import_path = "--proto_path=#{@input_folder}"
+    # TODO: build string in loop
     output_paths = "--java_out=#{folder}#{File::SEPARATOR}java --cpp_out=#{folder}#{File::SEPARATOR}cpp --python_out=#{folder}#{File::SEPARATOR}python"
 
     system_call = "protoc #{import_path} #{output_paths}  #{filelist}"
@@ -114,7 +118,7 @@ class Guy
 
     if @os == :windows        
 
-      system_call = "ProtoGen --proto_path=#{@input} -output_directory=#{folder}#{File::SEPARATOR}csharp #{filelist}"
+      system_call = "ProtoGen --proto_path=#{@input_folder} -output_directory=#{folder}#{File::SEPARATOR}csharp #{filelist}"
 
       if @verbose        
         puts "Call: #{system_call}" 

@@ -1,6 +1,7 @@
 class Helper
-
-  # check current os
+  # Checks the current running os
+  # 
+  # Returns the current host os as a label
   def self.os
     os ||= (
       host_os = RbConfig::CONFIG['host_os']
@@ -18,6 +19,9 @@ class Helper
     os
   end
 
+  # Find all proto files in a given folder recursively
+  #
+  # Returns list of file paths
   def self.recursive_proto_search(folder)
     Dir.glob("#{folder}/**/*.proto")
   end
