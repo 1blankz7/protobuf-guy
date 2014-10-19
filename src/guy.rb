@@ -25,38 +25,6 @@ class Guy
     end
 
     if @verbose
-      puts "Search binary: protoc"
-    end
-
-    # try to find protoc
-    protoc = Helper.which('protoc')
-    # terminate if not found
-    unless protoc
-      puts "Can't find 'protoc' in PATH"
-      return
-    end
-
-    if @verbose
-      puts "Found 'protoc' in #{protoc}" 
-      puts "Search binary: ProtoGen"
-    end
-
-
-    if @os == :windows
-      # if on windows try to find ProtoGen
-      # terminate if not found
-      protogen = Helper.which('ProtoGen')
-      unless protogen
-        puts "Can't find 'ProtoGen' in PATH"
-        return
-      end
-
-      if @verbose        
-        puts "Found 'ProtoGen' in #{protogen}" 
-      end
-    end    
-
-    if @verbose
       puts "Recursive search in: #{@input}"
     end
 
@@ -104,19 +72,22 @@ class Guy
     import_path = "--proto_path=#{@input}"
     output_paths = "--java_out=#{folder}#{File::SEPARATOR}java --cpp_out=#{folder}#{File::SEPARATOR}cpp --python_out=#{folder}#{File::SEPARATOR}python"
 
-    system_call = "protoc #{import_path} #{output_paths}  #{filelist}"
+    system_call = "#{Helper.getPathForExecutableFileInWorkingDirectory('protoc')} #{import_path} #{output_paths}  #{filelist}"
     
-    if @verbose        
+    #if @verbose
       puts "Call: #{system_call}" 
-    end
+    #end
 
     system(system_call)
 
     if @os == :windows        
 
-      system_call = "ProtoGen --proto_path=#{@input} -output_directory=#{folder}#{File::SEPARATOR}csharp #{filelist}"
+      protogenFilelist = files.join(" -i:")
 
-      if @verbose        
+      # system_call = "ProtoGen --proto_path=#{@input} -output_directory=#{folder}#{File::SEPARATOR}csharp #{filelist}"
+      system_call = "#{Helper.getPathForExecutableFileInWorkingDirectory('protogen')} -i:#{protogenFilelist} -o:#{folder}#{File::SEPARATOR}csharp#{File::SEPARATOR}GeneratedMessages.cs"
+
+      if @verbose
         puts "Call: #{system_call}" 
       end
       system(system_call)
