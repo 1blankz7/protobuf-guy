@@ -13,6 +13,10 @@ class Parser
     @filename = filename
   end
 
+  def removeCommentFromLine(line)
+    return line.split('//')[0]
+  end
+
   def searchForMessageInLine(line)
     line =~ /message (\w+)/
     return $1
@@ -43,6 +47,9 @@ class Parser
 
     while (line = lineIterator.gets)
       lineCounter.currentLine += 1
+
+      # Remove protobuf comments from the current line before processing it any further.
+      line = removeCommentFromLine(line)
 
       # Check if there is a nested message in this line.
       nestedMessageName = searchForMessageInLine(line)
