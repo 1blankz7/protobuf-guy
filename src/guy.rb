@@ -6,10 +6,10 @@ class Guy
 
   def initialize(args={})
     options = {
-      :verbose => false,
-      :input => '.',
-      :output => '.',
-      :map_name => 'MessageTypes.txt'
+        :verbose => false,
+        :input => '.',
+        :output => '.',
+        :map_name => 'MessageTypes.txt'
     }.merge(args)
 
     @verbose = options[:verbose]
@@ -37,7 +37,7 @@ class Guy
     if @verbose
       puts "Found #{files.count} proto file(s)"
     end
-        
+
     FileUtils::mkdir_p "#{@output}"
     # save map of files  
     save_map(files, @output, @map_name)
@@ -74,38 +74,47 @@ class Guy
     proto_options = ""
     import_path = "--proto_path=#{@input}"
     output_paths = "--java_out=#{folder}#{File::SEPARATOR}java --cpp_out=#{folder}#{File::SEPARATOR}cpp --python_out=#{folder}#{File::SEPARATOR}python"
-
-    if(@os == :windows)
-      import_path = Helper.convertFilePathToWindows(import_path)
-      output_paths = Helper.convertFilePathToWindows(output_paths)
-    end
+    protoc_executable = Helper.getPathForExecutableFileInWorkingDirectory('protoc')
 
     if (@os == :windows)
+      import_path = Helper.convertFilePathToWindows(import_path)
+      output_paths = Helper.convertFilePathToWindows(output_paths)
       protogenExecutable = Helper.convertFilePathToWindows(Helper.getPathForExecutableFileInWorkingDirectory('protogen'))
       outputFolder = Helper.convertFilePathToWindows(folder) + "\\csharp\\"
     end
 
-    for file in files
+    threads = Array.new()
 
-      system_call = "#{Helper.getPathForExecutableFileInWorkingDirectory('protoc')} #{import_path} #{output_paths} #{file}"
+    files.each { |file|
+      protoGenerateThread = Thread.new {
+        threadLocalFile = file
 
-      if @verbose
-        puts "Call: #{system_call}"
-      end
+        system_call_0 = "#{protoc_executable} #{import_path} #{output_paths} #{threadLocalFile}"
 
-      system(system_call)
+        if @verbose
+          puts "Call: #{system_call_0}"
+        end
 
-      if @os == :windows
+        system(system_call_0)
+
+        if @os == :windows
           fileName = File.basename(file, ".proto")
 
-          system_call = "#{protogenExecutable} -i:#{Helper.convertFilePathToWindows(file)} -o:#{outputFolder}#{fileName}.cs"
+          system_call_1 = "#{protogenExecutable} -i:#{Helper.convertFilePathToWindows(threadLocalFile)} -o:#{outputFolder}#{fileName}.cs"
 
           if @verbose
-            puts "\nCall: #{system_call}\n"
+            puts "\nCall: #{system_call_1}\n"
           end
 
-          system(system_call)
-      end
+          system(system_call_1)
+        end
+      }
+
+      threads << protoGenerateThread
+    }
+
+    for thread in threads
+      thread.join()
     end
   end
 
