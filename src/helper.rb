@@ -21,8 +21,18 @@ class Helper
     os
   end
 
+  def self.convertFilePathToWindows(path)
+    return path.gsub!("/", "\\")
+  end
+
+  def self.convertFilePathToUnix(path)
+    return path.gsub!("\\", "/")
+  end
+
   def self.recursive_proto_search(folder)
-    Dir.glob("#{folder}/**/*.proto")
+    filePath = File.join(folder, "**", "*.proto")
+
+    Dir.glob(filePath)
   end
 
   # Cross-platform way of finding a file in a recursive search in the current working directory.

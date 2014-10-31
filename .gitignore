@@ -43,7 +43,10 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+# Proto messages
+GeneratedMessages
 MessageTypes
+ProtoMessages
 
 /tests/*
 !/tests/test.proto

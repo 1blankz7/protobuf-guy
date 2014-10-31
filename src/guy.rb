@@ -17,6 +17,9 @@ class Guy
     @output = options[:output]
     @map_name = options[:map_name]
     @os = Helper.os
+
+    @input = Helper.convertFilePathToUnix(@input)
+    @output = Helper.convertFilePathToUnix(@output)
   end
 
   def work
@@ -72,25 +75,37 @@ class Guy
     import_path = "--proto_path=#{@input}"
     output_paths = "--java_out=#{folder}#{File::SEPARATOR}java --cpp_out=#{folder}#{File::SEPARATOR}cpp --python_out=#{folder}#{File::SEPARATOR}python"
 
-    system_call = "#{Helper.getPathForExecutableFileInWorkingDirectory('protoc')} #{import_path} #{output_paths}  #{filelist}"
-    
-    #if @verbose
-      puts "Call: #{system_call}" 
-    #end
+    if(@os == :windows)
+      import_path = Helper.convertFilePathToWindows(import_path)
+      output_paths = Helper.convertFilePathToWindows(output_paths)
+    end
 
-    system(system_call)
+    if (@os == :windows)
+      protogenExecutable = Helper.convertFilePathToWindows(Helper.getPathForExecutableFileInWorkingDirectory('protogen'))
+      outputFolder = Helper.convertFilePathToWindows(folder) + "\\csharp\\"
+    end
 
-    if @os == :windows        
+    for file in files
 
-      protogenFilelist = files.join(" -i:")
-
-      # system_call = "ProtoGen --proto_path=#{@input} -output_directory=#{folder}#{File::SEPARATOR}csharp #{filelist}"
-      system_call = "#{Helper.getPathForExecutableFileInWorkingDirectory('protogen')} -i:#{protogenFilelist} -o:#{folder}#{File::SEPARATOR}csharp#{File::SEPARATOR}GeneratedMessages.cs"
+      system_call = "#{Helper.getPathForExecutableFileInWorkingDirectory('protoc')} #{import_path} #{output_paths} #{file}"
 
       if @verbose
-        puts "Call: #{system_call}" 
+        puts "Call: #{system_call}"
       end
+
       system(system_call)
+
+      if @os == :windows
+          fileName = File.basename(file, ".proto")
+
+          system_call = "#{protogenExecutable} -i:#{Helper.convertFilePathToWindows(file)} -o:#{outputFolder}#{fileName}.cs"
+
+          if @verbose
+            puts "\nCall: #{system_call}\n"
+          end
+
+          system(system_call)
+      end
     end
   end
 
