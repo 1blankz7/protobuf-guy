@@ -5,13 +5,15 @@ Simple command line tool to translate protobuf messages into code. One goal of t
 
 The script is written in Ruby with some requirements.
 
+The script will do a recursive search for 'protoc' and 'protogen' executables starting in the current folder. The default executables are located in the 'ProtoGeneratorBins' folder.
+
 ## Requirements
 
 The tool is only tested with Ruby 1.9 on Windows 8 and Ubuntu 13.10. More environments will be tested in the future and reported in the tested secion below.
  
 ## Installation
 
-To install protobuf please refer the install guide in the protobuf directory. Usually you only need to add `protoc` to your path.
+The box should run out of the box. No installation necessary.
 
 ## Usage
 
