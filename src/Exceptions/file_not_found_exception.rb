@@ -1,0 +1,2 @@
+class FileNotFoundException < IOError
+end

@@ -1,3 +1,6 @@
+require File.dirname(__FILE__) + '/Exceptions/file_not_found_exception'
+require 'find'
+
 class Helper
   # Checks the current running os
   # 
@@ -19,11 +22,36 @@ class Helper
     os
   end
 
+  def self.convertFilePathToWindows(path)
+    return path.gsub!("/", "\\")
+  end
+
+  def self.convertFilePathToUnix(path)
+    return path.gsub!("\\", "/")
+  end
+
   # Find all proto files in a given folder recursively
   #
   # Returns list of file paths
   def self.recursive_proto_search(folder)
-    Dir.glob("#{folder}/**/*.proto")
+    filePath = File.join(folder, "**", "*.proto")
+
+    Dir.glob(filePath)
+  end
+
+  # Cross-platform way of finding a file in a recursive search in the current working directory.
+  def  self.getPathForExecutableFileInWorkingDirectory(cmd)
+    regex = /.*\/#{cmd}.*/
+    Find.find(Dir.getwd) do |path|
+      if path =~ regex
+        # We are only interested in executable files...
+        if (File.executable?(path))
+          return path
+        end
+      end
+    end
+
+    raise FileNotFoundException.new('Failed to find file: A file named ' + cmd + ' could not be found in a recursive search starting in this folder: ' + Dir.getwd)
   end
 
   # Cross-platform way of finding an executable in the $PATH.
