@@ -23,11 +23,13 @@ class Helper
   end
 
   def self.convertFilePathToWindows(path)
-    return path.gsub!("/", "\\")
+    converted = path.gsub!("/", "\\")
+    return converted.nil? ? path : converted
   end
 
   def self.convertFilePathToUnix(path)
-    return path.gsub!("\\", "/")
+    converted = path.gsub!("\\", "/")
+    return converted.nil? ? path : converted
   end
 
   # Find all proto files in a given folder recursively

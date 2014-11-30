@@ -9,7 +9,8 @@ class Guy
         :verbose => false,
         :input => '.',
         :output => '.',
-        :map_name => 'MessageTypes.txt'
+        :map_name => 'MessageTypes.txt',
+        :not_installed => false
     }.merge(args)
 
     @verbose = options[:verbose]
@@ -17,9 +18,10 @@ class Guy
     @output_folder = options[:output]
     @map_name = options[:map_name]
     @os = Helper.os
+    @use_working_dir = options[:not_installed]
 
-    @input = Helper.convertFilePathToUnix(@input)
-    @output = Helper.convertFilePathToUnix(@output)
+    @input = Helper.convertFilePathToUnix(@input_folder)
+    @output = Helper.convertFilePathToUnix(@output_folder)
   end
 
   def work
@@ -110,7 +112,11 @@ class Guy
     import_path = "--proto_path=#{@input}"
     # TODO: build string in loop
     output_paths = "--java_out=#{folder}#{File::SEPARATOR}java --cpp_out=#{folder}#{File::SEPARATOR}cpp --python_out=#{folder}#{File::SEPARATOR}python"
-    protoc_executable = Helper.getPathForExecutableFileInWorkingDirectory('protoc')
+    protoc_executable = 'protoc'
+
+    if @use_working_dir
+      protoc_executable = Helper.getPathForExecutableFileInWorkingDirectory(protoc_executable)
+    end
 
     if (@os == :windows)
       import_path = Helper.convertFilePathToWindows(import_path)
