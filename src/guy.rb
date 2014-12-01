@@ -121,7 +121,7 @@ class Guy
     if (@os == :windows)
       import_path = Helper.convertFilePathToWindows(import_path)
       output_paths = Helper.convertFilePathToWindows(output_paths)
-      protogenExecutable = Helper.convertFilePathToWindows(Helper.getPathForExecutableFileInWorkingDirectory('protogen'))
+      protogenExecutable = Helper.convertFilePathToWindows(Helper.getPathForExecutableFileInWorkingDirectory('ProtoGen'))
       outputFolder = Helper.convertFilePathToWindows(folder) + "\\csharp\\"
     end
 
