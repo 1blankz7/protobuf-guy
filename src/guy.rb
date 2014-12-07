@@ -25,41 +25,41 @@ class Guy
   end
 
   def work
-    if @verbose
-      puts "Recursive search in: #{@input_folder}"
-    end
-
-    if @verbose
-      puts "Search binary: protoc"
-    end
-
-    # try to find protoc
-    protoc = Helper.which('protoc')
-    # terminate if not found
-    unless protoc
-      puts "Can't find 'protoc' in PATH"
-      return
-    end
-
-    if @verbose
-      puts "Found 'protoc' in #{protoc}" 
-      puts "Search binary: ProtoGen"
-    end
-
-    if @os == :windows
-      # if on windows try to find ProtoGen
+    if not @use_working_dir
+      if @verbose
+        puts "Search binary: protoc"
+      end
+      # try to find protoc
+      protoc = Helper.which('protosc')
       # terminate if not found
-      protogen = Helper.which('ProtoGen')
-      unless protogen
-        puts "Can't find 'ProtoGen' in PATH"
+      unless protoc
+        puts "Can't find 'protoc' in PATH"
         return
       end
 
-      if @verbose        
-        puts "Found 'ProtoGen' in #{protogen}" 
+      if @verbose
+        puts "Found 'protoc' in #{protoc}" 
+        puts "Search binary: ProtoGen"
       end
-    end    
 
+      if @os == :windows
+        # if on windows try to find ProtoGen
+        # terminate if not found
+        protogen = Helper.which('ProtoGen')
+        unless protogen
+          puts "Can't find 'ProtoGen' in PATH"
+          return
+        end
+
+        if @verbose        
+          puts "Found 'ProtoGen' in #{protogen}" 
+        end
+      end
+    end
+
+    if @verbose
+      puts "Recursive search in: #{@input_folder}"
+    end
     if @verbose
       puts "Recursive search in: #{@input}"
     end
