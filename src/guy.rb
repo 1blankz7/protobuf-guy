@@ -123,12 +123,12 @@ class Guy
       output_paths = Helper.convertFilePathToWindows(output_paths)
       protogenExecutable = Helper.convertFilePathToWindows(Helper.getPathForExecutableFileInWorkingDirectory('ProtoGen'))
       outputFolder = Helper.convertFilePathToWindows(folder) + "\\csharp\\"
-      puts "ProtoGen: #{protogenExecutable}" if @options.verbose
-      puts "C# output: #{outputFolder}" if @options.verbose
+      puts "ProtoGen: #{protogenExecutable}" if @verbose
+      puts "C# output: #{outputFolder}" if @verbose
     end
 
-    puts "Imports: #{import_path}" if @options.verbose
-    puts "Outputs: #{output_paths}" if @options.verbose
+    puts "Imports: #{import_path}" if @verbose
+    puts "Outputs: #{output_paths}" if @verbose
 
     threads = Array.new()
 
