@@ -30,7 +30,7 @@ class Guy
         puts "Search binary: protoc"
       end
       # try to find protoc
-      protoc = Helper.which('protosc')
+      protoc = Helper.which('protoc')
       # terminate if not found
       unless protoc
         puts "Can't find 'protoc' in PATH"
