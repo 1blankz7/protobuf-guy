@@ -79,6 +79,7 @@ class Guy
   end
 
   def save_map(files, folder, map_name)
+    files.sort!
     File.open("#{folder}#{File::SEPARATOR}#{map_name}", 'w') do |map|
       index = 0
       files.each do |file|
