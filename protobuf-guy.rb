@@ -31,7 +31,7 @@ require 'fileutils'
 require './src/guy'
 
 class App
-  VERSION = '0.2'
+  VERSION = '0.2.1'
   
   attr_reader :options
 
