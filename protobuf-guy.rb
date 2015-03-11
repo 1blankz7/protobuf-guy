@@ -31,7 +31,7 @@ require 'fileutils'
 require './src/guy'
 
 class App
-  VERSION = '0.1'
+  VERSION = '0.2.1'
   
   attr_reader :options
 
@@ -57,6 +57,7 @@ class App
       args[:input] = @options.input if @options.input
       args[:output] = @options.output if @options.output
       args[:map_name] = @options.map_name if @options.map_name
+      args[:not_installed] = @options.cwd if @options.cwd
       
       program = Guy.new args
       program.work
@@ -71,7 +72,8 @@ class App
     @opts = OptionParser.new 
     @opts.on('-v', '--version')    { output_version ; exit 0 }
     @opts.on('-h', '--help')       { output_help ; exit 0}
-    @opts.on('-V', '--verbose')    { @options.verbose = true }  
+    @opts.on('-V', '--verbose')    { @options.verbose = true }
+    @opts.on('--cwd', "Search for executables in working directory.")    { @options.cwd = true }
     @opts.on('-i', '--input INPUT', "Require the input folder") do |input|
       @options.input = input.gsub(/[#{File::SEPARATOR}]+$/, '')
     end
