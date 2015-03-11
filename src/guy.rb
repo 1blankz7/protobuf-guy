@@ -45,7 +45,8 @@ class Guy
       if @os == :windows
         # if on windows try to find ProtoGen
         # terminate if not found
-        protogen = Helper.which('ProtoGen')
+        # TODO: we should use the PATH instead
+        protogen = Helper.convertFilePathToWindows(Helper.getPathForExecutableFileInWorkingDirectory('ProtoGen'))
         unless protogen
           puts "Can't find 'ProtoGen' in PATH"
           return
@@ -58,21 +59,20 @@ class Guy
     end
 
     if @verbose
-      puts "Recursive search in: #{@input_folder}"
-    end
-    if @verbose
       puts "Recursive search in: #{@input}"
     end
 
     # search input folder recursive
-    files = Helper.recursive_proto_search(@input_folder)
+    files = Helper.recursive_proto_search(@input)
 
     if @verbose
       puts "Found #{files.count} proto file(s)"
     end
 
+    puts "Clear output folder" if @verbose
     reset_output_folder
-    # save map of files  
+    # save map of files
+    puts "Create message map" if @verbose
     save_map(files, @output, @map_name)
     # build classes
     build_classes(files, @output)

@@ -43,7 +43,7 @@ class Helper
 
   # Cross-platform way of finding a file in a recursive search in the current working directory.
   def  self.getPathForExecutableFileInWorkingDirectory(cmd)
-    regex = /.*\/#{cmd}.*/
+    regex = /.*\/#{cmd}\.exe.*/
     Find.find(Dir.getwd) do |path|
       if path =~ regex
         # We are only interested in executable files...

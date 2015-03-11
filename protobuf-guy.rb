@@ -28,10 +28,10 @@ require 'rbconfig'
 require 'pathname'
 require 'csv'
 require 'fileutils'
-require './src/guy'
+require_relative 'src/guy'
 
 class App
-  VERSION = '0.2.1'
+  VERSION = '0.2.2'
   
   attr_reader :options
 
