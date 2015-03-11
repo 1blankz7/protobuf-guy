@@ -37,6 +37,8 @@ The script creates four subdirectories in the `tests` directory and the translat
 
 To create nested messages in the MessagesTypes list, you must use the convention of `two spaces` as indentation for every nesting level.
 
+For C# your working directory must be in a parent directory of your proto files.
+
 ## Tested
 
 The script was currently tested with following configurations:
@@ -48,6 +50,8 @@ The script was currently tested with following configurations:
 
 ## Changelog
 
+ * 11.03.2015
+     * relative imports for commandline interface
  * 30.11.2014
     * add tests for helper
     * new parameter `--cwd` for searching in working directory for executable
