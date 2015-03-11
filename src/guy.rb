@@ -85,6 +85,7 @@ class Guy
       files.each do |file|
         parser = Parser.new(file)
         messages = parser.parse
+        messages.sort!
         messages.each do |message|
           map.write("#{index},#{message}\n")
           index += 1
