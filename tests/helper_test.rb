@@ -17,7 +17,7 @@ class HelperTest < Test::Unit::TestCase
   end
 
   def test_os
-    assert_equal(:macosx, Helper.os)
+    assert_equal(:linux, Helper.os)
   end
 
   def test_recursive_proto_search
