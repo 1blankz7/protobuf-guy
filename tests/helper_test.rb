@@ -21,8 +21,6 @@ class HelperTest < Test::Unit::TestCase
   end
 
   def test_recursive_proto_search
-    folder = '/Users/squad/git'
-    assert(Helper.recursive_proto_search(folder).include?('/Users/squad/git/protobuf-guy/tests/test.proto'))
     folder = '.'
     assert(Helper.recursive_proto_search(folder).include?('./tests/test.proto'))
   end
