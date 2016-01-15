@@ -1,6 +1,8 @@
 Protobuf Guy
 ============
 
+[![Build Status](https://travis-ci.org/i2e-haw-hamburg/protobuf-guy.svg?branch=master)](https://travis-ci.org/i2e-haw-hamburg/protobuf-guy)
+
 Simple command line tool to translate protobuf messages into code. One goal of the script is plattform independency, so you can use it either on OSX, Windows or Linux. 
 
 The script is written in Ruby with some requirements.
